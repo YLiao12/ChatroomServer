@@ -9,6 +9,7 @@ def hello_world():
 
 @app.route("/api/a3/get_chatrooms")
 def get_chatrooms():
+    pass
 
 
 if __name__ == "__main__": 
