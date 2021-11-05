@@ -6,8 +6,8 @@ app = Flask(__name__)
 
 conn = mysql.connector.connect(
   host="localhost",       
-  user="dbuser",    
-  passwd="password",   
+  user="leo",    
+  passwd="L21516114leo",   
   database = "iems5722",
 )
 cursor = conn.cursor(dictionary = True)
