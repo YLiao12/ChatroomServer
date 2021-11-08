@@ -46,7 +46,7 @@ def get_messages():
     # select page using current_msg_id (every page 10 messages)
     # delete key "id" and "chatroom_id" in every dict selected in results list
 
-    total_pages = current_msg_id / 10 + 1
+    total_pages = int(current_msg_id / 10) + 1
     if page > total_pages:
         return jsonify(message="You are requesting more than total page ", status = "ERROR")
 
