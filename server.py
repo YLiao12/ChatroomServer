@@ -70,6 +70,7 @@ def get_messages():
         del result["id"]
         del result["chatroom_id"]
         new_result.append(result)
+    new_result.reverse()
     messages_list_json = json.dumps(new_result)
     data_json = jsonify(current_page = page, messages=messages_list_json, total_pages = total_pages)
     # data = json.loads(str(data_json)) 
