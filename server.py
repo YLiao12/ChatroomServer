@@ -39,10 +39,9 @@ def get_messages():
     queryMessages = "select * from messages where chatroom_id = %s"
     param = (chatroom_id, )
     cursor.execute(queryMessages, param)
-    results = cursor.fetchall()
-    current_msg_id = int(results[len(results) - 1]["id"])
+    all_results = cursor.fetchall()
+    current_msg_id = int(all_results[len(all_results) - 1]["id"])
     print(current_msg_id)
-
     # 
     # select page using current_msg_id (every page 10 messages)
     # delete key "id" and "chatroom_id" in every dict selected in results list
@@ -54,7 +53,17 @@ def get_messages():
     showing_messages = None
     # calculating starting id and ending id
     # for i in range ( , )
-
+    if page == 1:
+        startingId = (total_pages - page) * 10 + 1
+        endingId = current_msg_id
+    else:
+        startingId = (total_pages - page) * 10 + 1
+        endingId = startingId + 9
+    
+    query_messages_page = "select * from messages where chatroom_id = %s and id < %s and id > %s"
+    param_page = (chatroom_id, startingId, endingId)
+    cursor.execute(query_messages_page, param_page)
+    results = cursor.fetchall()
 
     return json.dumps(results)
     pass
