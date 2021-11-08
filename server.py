@@ -62,16 +62,21 @@ def get_messages():
     
     query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s"
     param_page = (chatroom_id, endingId, startingId)
-    print(total_pages)
-    print(page)
-    print(startingId)
-    print(endingId)
     cursor.execute(query_messages_page, param_page)
     
     results = cursor.fetchall()
-
-    return json.dumps(results)
-    pass
+    new_result = []
+    for result in results:
+        del result["id"]
+        del result["chatroom_id"]
+        new_result.append(result)
+    messages_list_json = json.dumps(new_result)
+    data_json = jsonify(current_page = page, messages=messages_list_json, total_pages = total_pages)
+    # data = json.loads(str(data_json)) 
+    data = data_json.get_json()
+    result_json = jsonify(data=data, status="OK")
+    print(type(data))
+    return result_json
 
 @app.route("/api/a3/send_message", methods=["POST"])
 def send_message():
