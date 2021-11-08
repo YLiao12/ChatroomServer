@@ -62,6 +62,10 @@ def get_messages():
     
     query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s"
     param_page = (chatroom_id, endingId, startingId)
+    print(total_pages)
+    print(page)
+    print(startingId)
+    print(endingId)
     cursor.execute(query_messages_page, param_page)
     
     results = cursor.fetchall()
