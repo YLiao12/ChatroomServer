@@ -70,7 +70,7 @@ def get_messages():
         startingId = (total_pages - page) * 10 + 1
         endingId = startingId + 9
     
-    query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s"
+    query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s DESC"
     param_page = (chatroom_id, endingId, startingId)
     cursor.execute(query_messages_page, param_page)
     
@@ -80,7 +80,7 @@ def get_messages():
         del result["id"]
         del result["chatroom_id"]
         new_result.append(result)
-    new_result.reverse()
+    # new_result.reverse()
     messages_list_json = json.dumps(new_result)
     data_json = jsonify(current_page = page, messages=messages_list_json, total_pages = total_pages)
     # data = json.loads(str(data_json)) 
