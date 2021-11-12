@@ -22,7 +22,12 @@ def get_chatrooms():
     # change records into json
     # return json
     query_chatroom = "SELECT * FROM chatrooms ORDER BY id ASC"
-    cursor.execute(query_chatroom)
+    while True:
+        try:
+            cursor.execute(query_chatroom)
+            break
+        except Exception:
+            conn.ping(True)
     results = cursor.fetchall()
     jsonResult = json.dumps(results)
     # some issues about json 
@@ -38,10 +43,15 @@ def get_messages():
     page = int(request.args.get("page"))
     queryMessages = "select * from messages where chatroom_id = %s"
     param = (chatroom_id, )
-    cursor.execute(queryMessages, param)
+    while True:
+        try:
+            cursor.execute(queryMessages, param)
+            break
+        except Exception:
+            conn.ping(True)
     all_results = cursor.fetchall()
     current_msg_id = int(all_results[len(all_results) - 1]["id"])
-    print(current_msg_id)
+    # print(current_msg_id)
     # 
     # select page using current_msg_id (every page 10 messages)
     # delete key "id" and "chatroom_id" in every dict selected in results list
@@ -76,7 +86,6 @@ def get_messages():
     # data = json.loads(str(data_json)) 
     data = data_json.get_json()
     result_json = jsonify(data=data, status="OK")
-    print(type(data))
     return result_json
 
 @app.route("/api/a3/send_message", methods=["POST"])
@@ -94,10 +103,15 @@ def send_message():
 
     querySendMessage = "insert into messages(chatroom_id, user_id, name, message) values (%s, %s, %s, %s);"
     param = (chatroom_id, user_id, name, message)
-    cursor.execute(querySendMessage, param)
-    conn.commit()
+    while True:
+        try:
+            cursor.execute(querySendMessage, param)
+            conn.commit()
+            break
+        except Exception:
+            conn.ping(True)
     return jsonify(status="OK")
-    pass
+    # pass
 
 if __name__ == "__main__": 
     app.run(debug = True, host = '0.0.0.0', port='8080')
