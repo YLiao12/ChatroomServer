@@ -50,13 +50,18 @@ def get_messages():
         except Exception:
             conn.ping(True)
     all_results = cursor.fetchall()
-    current_msg_id = int(all_results[len(all_results) - 1]["id"])
+    current_msg_num = len(all_results)
+    # current_msg_id = int(all_results[len(all_results) - 1]["id"])
     # print(current_msg_id)
     # 
     # select page using current_msg_id (every page 10 messages)
     # delete key "id" and "chatroom_id" in every dict selected in results list
-
-    total_pages = int(current_msg_id / 10) + 1
+    if current_msg_num % 10:
+        total_pages = int(current_msg_num / 10) + 1
+    else:
+        total_pages = int(current_msg_num /10)
+    print(current_msg_num)
+    print(total_pages)
     if page > total_pages:
         return jsonify(message="You are requesting more than total page ", status = "ERROR")
 
@@ -65,12 +70,12 @@ def get_messages():
     # for i in range ( , )
     if page == 1:
         startingId = (total_pages - page) * 10 + 1
-        endingId = current_msg_id
+        endingId = current_msg_num
     else:
         startingId = (total_pages - page) * 10 + 1
         endingId = startingId + 9
     
-    query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s DESC"
+    query_messages_page = "select * from messages where chatroom_id = %s and id <= %s and id >= %s order by id DESC"
     param_page = (chatroom_id, endingId, startingId)
     cursor.execute(query_messages_page, param_page)
     
