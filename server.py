@@ -51,7 +51,7 @@ def get_messages():
             conn.ping(True)
     all_results = cursor.fetchall()
     current_msg_num = len(all_results)
-    # current_msg_id = int(all_results[len(all_results) - 1]["id"])
+    current_msg_id = int(all_results[len(all_results) - 1]["id"])
     # print(current_msg_id)
     # 
     # select page using current_msg_id (every page 10 messages)
@@ -70,7 +70,7 @@ def get_messages():
     # for i in range ( , )
     if page == 1:
         startingId = (total_pages - page) * 10 + 1
-        endingId = current_msg_num
+        endingId = current_msg_id
     else:
         startingId = (total_pages - page) * 10 + 1
         endingId = startingId + 9
