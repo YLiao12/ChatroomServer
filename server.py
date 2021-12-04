@@ -118,5 +118,20 @@ def send_message():
     return jsonify(status="OK")
     # pass
 
+@app.route("/api/a4/submit_push_token", methods=["POST"])
+def submit_push_token():
+    user_id = request.form.get("user_id")
+    token = request.form.get("token")
+    querySendMessage = "insert into push_tokens(user_id, token, message) values (%s, %s);"
+    param = ( user_id, token)
+    while True:
+        try:
+            cursor.execute(querySendMessage, param)
+            conn.commit()
+            break
+        except Exception:
+            conn.ping(True)
+    return jsonify(status="OK")
+
 if __name__ == "__main__": 
     app.run(debug = True, host = '0.0.0.0', port='8080')
