@@ -1,7 +1,23 @@
 from flask.wrappers import Request
 import mysql.connector
 from flask import Flask, request, jsonify, json
-    
+from celery import Celery
+from task import send_push
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+    celery.Task = ContextTask
+    return celery
+
 app = Flask(__name__)
 
 conn = mysql.connector.connect(
@@ -11,6 +27,13 @@ conn = mysql.connector.connect(
   database = "iems5722",
 )
 cursor = conn.cursor(dictionary = True)
+
+app.config.update(
+    CELERY_BROKER_URL='amqp://guest@localhost//',
+    # CELERY_RESULT_BACKEND='redis://localhost:6379'
+)
+
+celery = make_celery(app)
 
 @app.route("/") 
 def hello_world():
@@ -98,6 +121,7 @@ def send_message():
     # get chatroom_id, user_id, name, message from post api
     # write into mysql
     # return status OK json
+
     chatroom_id = request.form.get("chatroom_id")
     user_id = request.form.get("user_id")
     name = request.form.get("name")
@@ -115,8 +139,11 @@ def send_message():
             break
         except Exception:
             conn.ping(True)
+    
+    send_push.delay(name, message)
     return jsonify(status="OK")
     # pass
+    
 
 @app.route("/api/a4/submit_push_token", methods=["POST"])
 def submit_push_token():
@@ -132,6 +159,7 @@ def submit_push_token():
         except Exception:
             conn.ping(True)
     return jsonify(status="OK")
+
 
 if __name__ == "__main__": 
     app.run(debug = True, host = '0.0.0.0', port='8080')
