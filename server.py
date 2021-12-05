@@ -119,7 +119,7 @@ def send_message():
         except Exception:
             conn.ping(True)
 
-    queryMessages = "select token from messages where user_id = %s"
+    queryMessages = "select token from push_tokens where user_id = %s"
     param = ("1155161159", )
     while True:
         try:
@@ -131,7 +131,7 @@ def send_message():
     print(results)
     registration_id_list = []
     for single in results:
-        registration_id_list.append(results["token"])
+        registration_id_list.append(single["token"])
     print(registration_id_list)
     send_push.delay(name, message, registration_id_list)
     return jsonify(status="OK")
