@@ -122,7 +122,7 @@ def send_message():
 def submit_push_token():
     user_id = request.form.get("user_id")
     token = request.form.get("token")
-    querySendMessage = "insert into push_tokens(user_id, token, message) values (%s, %s);"
+    querySendMessage = "insert into push_tokens(user_id, token) values (%s, %s);"
     param = ( user_id, token)
     while True:
         try:
