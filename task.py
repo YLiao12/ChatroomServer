@@ -48,6 +48,9 @@ def send_push(name, message):
             conn.ping(True)
     results = cursor.fetchall()
     print(results)
+    registration_id_list = []
+    for single in results:
+        registration_id_list.append(results["token"])
     message_title = name
     message_body = message
     # result = push_service.notify_single_device(
@@ -55,7 +58,7 @@ def send_push(name, message):
     #     message_title = message_title,
     #     message_body = message_body)
     result = push_service.notify_multiple_devices(
-        registration_ids=results,
+        registration_ids=registration_id_list,
         message_title = message_title,
         message_body = message_body
     )
