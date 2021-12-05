@@ -4,20 +4,6 @@ from flask import Flask, request, jsonify, json
 from celery import Celery
 from task import send_push
 
-def make_celery(app):
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
-    )
-    celery.conf.update(app.config)
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-    celery.Task = ContextTask
-    return celery
-
 app = Flask(__name__)
 
 conn = mysql.connector.connect(
@@ -27,13 +13,6 @@ conn = mysql.connector.connect(
   database = "iems5722",
 )
 cursor = conn.cursor(dictionary = True)
-
-app.config.update(
-    CELERY_BROKER_URL='amqp://guest@localhost//',
-    # CELERY_RESULT_BACKEND='redis://localhost:6379'
-)
-
-celery = make_celery(app)
 
 @app.route("/") 
 def hello_world():
